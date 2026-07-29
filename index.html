@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌙 The Brain Teaser Challenge 🏆</title>
+    <title>🧠 The 40.99 Taka Recharge IQ Test Challenge 🏆</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
 
         /* Festive Background */
         body::before {
-            content: "🌙 ✨ 🏮"; position: fixed; top: 15px; right: 20px;
+            content: "🧠 ⚡ 💡"; position: fixed; top: 15px; right: 20px;
             font-size: 2rem; opacity: 0.6; pointer-events: none;
             filter: drop-shadow(0 0 10px var(--gold-glow));
         }
@@ -167,6 +167,21 @@
         .reward-pending { background: rgba(245, 158, 11, 0.2); color: var(--gold-glow); border: 1px solid var(--gold); }
         .reward-paid { background: rgba(16, 185, 129, 0.3); color: #34d399; border: 1px solid #10b981; }
 
+        /* CHAT BOX STYLES */
+        .chat-wrapper {
+            margin-top: 30px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 14px;
+            border: 1px solid var(--gold); text-align: left;
+        }
+        .chat-messages {
+            max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+            margin-bottom: 12px; padding-right: 5px;
+        }
+        .chat-bubble {
+            background: rgba(251, 191, 36, 0.12); border-left: 3px solid var(--gold);
+            padding: 8px 12px; border-radius: 0 10px 10px 0; font-size: 0.85rem; color: #fff;
+        }
+        .chat-bubble span { font-weight: bold; color: var(--gold-glow); margin-right: 5px; }
+
         /* BUILDER STYLES */
         .draft-q-card {
             background: rgba(0,0,0,0.4); border: 1px solid var(--gold); border-radius: 8px;
@@ -211,7 +226,7 @@
                 <li>❌ Do not <b>refresh</b> the page.</li>
                 <li>❌ Do not <b>close</b> the website.</li>
             </ul>
-            <p style="color:var(--danger); font-weight:bold; margin-bottom:20px; font-size:0.9rem;">If you leave the quiz for ANY reason, you will be automatically disqualified and lose your chance at the prize!</p>
+            <p style="color:var(--danger); font-weight:bold; margin-bottom:20px; font-size:0.9rem;">If you leave the quiz for ANY reason, you will be automatically disqualified and lose your chance at the 40.99 Taka recharge!</p>
             <button class="btn-gold" onclick="acceptRulesAndStart()">I Understand, Start Quiz</button>
         </div>
     </div>
@@ -222,7 +237,7 @@
             <h2 style="color:var(--danger); margin-bottom:15px; font-size: 2rem;">🚫 Disqualified!</h2>
             <p style="color:#fff; font-size:1rem; line-height:1.6;">
                 You left, minimized, refreshed, or switched tabs during the quiz.<br><br>
-                <b>Your attempt has been cancelled and recorded as a cheat attempt. No prize for you!</b>
+                <b>Your attempt has been cancelled and recorded as a cheat attempt. No recharge for you!</b>
             </p>
         </div>
     </div>
@@ -248,8 +263,8 @@
             
             <!-- ENTRY SCREEN -->
             <div id="entry-screen">
-                <h1 class="main-title">🌙 IQ & Logic Challenge</h1>
-                <p class="subtitle">Test your brainpower with trick questions. Good luck!</p>
+                <h1 class="main-title">🧠 40.99 Taka Recharge Challenge IQ Test</h1>
+                <p class="subtitle">Outsmart the trick questions and win a 40.99 Taka mobile recharge!</p>
                 
                 <div class="form-group">
                     <label>Enter Your Name *</label>
@@ -257,7 +272,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Mobile Number * (For the Prize 🎁)</label>
+                    <label>Mobile Number * (For 40.99 Taka Recharge 🎁)</label>
                     <input type="tel" id="user-mobile" placeholder="01XXXXXXXXX" required>
                 </div>
 
@@ -302,6 +317,19 @@
             <p class="subtitle">Rankings sync instantly as players finish!</p>
             <div id="dash-loader" style="text-align:center; color:var(--gold-glow); display:none;">Waiting for players...</div>
             <div class="leaderboard-list" id="leaderboard-items"></div>
+
+            <!-- LIVE ANONYMOUS COMMENT SECTION -->
+            <div class="chat-wrapper">
+                <h3 style="color:var(--gold-glow); margin-bottom:10px; font-size:1.1rem;">💬 Live Anonymous Fan Chat</h3>
+                <div id="chat-messages" class="chat-messages">
+                    <div style="color:gray; font-size:0.85rem; text-align:center;">Loading comments...</div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="chat-name" placeholder="Name (Opt)" style="margin-bottom:0; flex: 1; padding: 10px; font-size: 0.9rem;">
+                    <input type="text" id="chat-msg" placeholder="Say something..." style="margin-bottom:0; flex: 2; padding: 10px; font-size: 0.9rem;" onkeypress="handleChatEnter(event)">
+                    <button class="btn-gold" style="width: auto; padding: 0 18px; margin-top:0; font-size: 0.9rem;" onclick="sendLiveComment()">Send</button>
+                </div>
+            </div>
         </div>
 
         <!-- TAB 3: ADMIN PANEL -->
@@ -326,7 +354,7 @@
 
                 <!-- Leaderboard View -->
                 <div id="admin-board-view">
-                    <p class="subtitle" style="text-align:center;">Manage players and track reward status.</p>
+                    <p class="subtitle" style="text-align:center;">Manage players and track recharge status.</p>
                     <div style="overflow-x: auto;">
                         <table class="admin-table">
                             <thead>
@@ -334,7 +362,7 @@
                                     <th>Rank</th>
                                     <th>Player Info</th>
                                     <th>Score</th>
-                                    <th>Reward</th>
+                                    <th>Recharge</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -462,6 +490,7 @@
         
         let leaderboardListener = null;
         let adminListener = null;
+        let chatListener = null;
 
         // Fetch published questions
         async function fetchActiveQuiz() {
@@ -495,7 +524,10 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(tabId).classList.add('active');
-            if (tabId === 'dashboard-tab') startLiveLeaderboard();
+            if (tabId === 'dashboard-tab') {
+                startLiveLeaderboard();
+                startLiveChat();
+            }
         };
 
         window.showRules = function() {
@@ -587,7 +619,7 @@
             }
 
             const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
-            let title = percentage === 100 ? "🐐 Flawless! True Genius!" : percentage >= 60 ? "🧠 Great Job! Smart Mind!" : percentage >= 30 ? "🚜 Needs improvement..." : "🤡 Absolute Disaster!";
+            let title = percentage === 100 ? "🐐 Flawless! 40.99 Taka Earned!" : percentage >= 60 ? "🧠 Great Job! Smart Mind!" : percentage >= 30 ? "🚜 Needs improvement..." : "🤡 Absolute Disaster!";
 
             document.getElementById('quiz-active-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'block';
@@ -657,6 +689,7 @@
                     let isWinner = rank === 1 && data.totalScore > 0;
                     let boxClass = isWinner ? "leader-item winner-box" : "leader-item";
                     let rankIcon = isWinner ? "👑 Winner" : `${rank}.`;
+                    let rewardStatusBadge = data.rewardGiven ? `<div style="font-size:0.75rem; color:#34d399; font-weight:bold; margin-top:2px;">🎁 Recharge Paid! ✅</div>` : ``;
 
                     list.innerHTML += `
                         <div class="${boxClass}">
@@ -664,6 +697,7 @@
                                 <div style="font-weight:bold; color:#fff;">${rankIcon} ${data.name}</div>
                                 <div style="font-size:0.8rem; color:var(--text-gold);">Mobile: ${hiddenMobile}</div>
                                 ${statusHtml}
+                                ${rewardStatusBadge}
                             </div>
                             <div class="leader-rank">${data.totalScore} Pts</div>
                         </div>
@@ -674,6 +708,58 @@
                 document.getElementById('dash-loader').style.display = 'none';
             });
         }
+
+        function startLiveChat() {
+            if (chatListener) return;
+            const chatRef = query(collection(db, "live_chat"), orderBy("timestamp", "asc"));
+            
+            chatListener = onSnapshot(chatRef, (snapshot) => {
+                const chatBox = document.getElementById('chat-messages');
+                chatBox.innerHTML = '';
+                
+                let messages = [];
+                snapshot.forEach(doc => messages.push(doc.data()));
+
+                if (messages.length === 0) {
+                    chatBox.innerHTML = '<div style="color:gray; font-size:0.85rem; text-align:center;">No comments yet. Be the first!</div>';
+                    return;
+                }
+
+                messages.forEach(msg => {
+                    chatBox.innerHTML += `
+                        <div class="chat-bubble">
+                            <span>${msg.name}:</span> ${msg.text}
+                        </div>
+                    `;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        window.sendLiveComment = async function() {
+            const nameInput = document.getElementById('chat-name');
+            const msgInput = document.getElementById('chat-msg');
+            
+            let nameVal = nameInput.value.trim() || "Anonymous Fan";
+            let textVal = msgInput.value.trim();
+
+            if (!textVal) return;
+
+            try {
+                await addDoc(collection(db, "live_chat"), {
+                    name: nameVal,
+                    text: textVal,
+                    timestamp: serverTimestamp()
+                });
+                msgInput.value = '';
+            } catch(e) {}
+        };
+
+        window.handleChatEnter = function(e) {
+            if (e.key === 'Enter') {
+                window.sendLiveComment();
+            }
+        };
 
         // -----------------------
         // ADMIN PANEL LOGIC
@@ -729,7 +815,7 @@
                 dataArr.forEach((data) => {
                     const statusColor = data.status === "Completed" ? "var(--success)" : "var(--danger)";
                     const encodedName = encodeURIComponent(data.name || "Player");
-                    const smsLink = `sms:${data.mobile}?body=Congratulations%20${encodedName}!%20You%20scored%20${data.totalScore}%20points!`;
+                    const smsLink = `sms:${data.mobile}?body=Congratulations%20${encodedName}!%20You%20scored%20${data.totalScore}%20points%20in%20the%2040.99%20Taka%20Challenge!`;
                     
                     let rankDisplay = rank === 1 && data.totalScore > 0 ? "👑 1" : rank;
                     
@@ -763,13 +849,13 @@
         // USER MANAGEMENT
         window.toggleReward = async function(docId, currentStatus) {
             try { await updateDoc(doc(db, "custom_quiz_results", docId), { rewardGiven: !currentStatus }); } 
-            catch(e) { console.error("Update failed", e); }
+            catch(e) {}
         };
 
         window.deleteUser = async function(docId) {
             if(confirm("Are you sure you want to delete this player permanently?")) {
                 try { await deleteDoc(doc(db, "custom_quiz_results", docId)); } 
-                catch(e) { console.error("Delete failed", e); }
+                catch(e) {}
             }
         };
 
@@ -811,7 +897,7 @@
                 await setDoc(doc(db, "admin_data", "current_quiz"), { questions: [], updatedAt: serverTimestamp() });
                 activeQuestions = [];
                 alert("Active quiz deleted successfully!");
-            } catch(e) { console.error(e); alert("Failed to delete quiz."); }
+            } catch(e) { alert("Failed to delete quiz."); }
         };
 
         window.toggleQBType = function() {
