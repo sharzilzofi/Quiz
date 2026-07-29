@@ -1,1 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌙 The Brain Teaser Challenge 🏆</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- JS Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 
+    <style>
+        :root {
+            --bg-dark: #031c15;
+            --emerald: #064e3b;
+            --emerald-light: #0d9488;
+            --gold: #f59e0b;
+            --gold-glow: #fbbf24;
+            --card-bg: rgba(6, 78, 59, 0.85);
+            --text-light: #f8fafc;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top, #06382b, var(--bg-dark));
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 40px;
+            user-select: none;
+        }
+
+        /* Festive Background */
+        body::before {
+            content: "🌙 ✨ 🏮"; position: fixed; top: 15px; right: 20px;
+            font-size: 2rem; opacity: 0.6; pointer-events: none;
+            filter: drop-shadow(0 0 10px var(--gold-glow));
+        }
+
+        /* TOP NAVIGATION BAR */
+        .navbar {
+            width: 100%; max-width: 800px; background: rgba(3, 28, 21, 0.95);
+            backdrop-filter: blur(10px); border-bottom: 2px solid var(--gold);
+            display: flex; justify-content: space-around; padding: 12px 0;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-tab {
+            background: none; border: none; color: var(--text-light);
+            font-size: 0.9rem; font-weight: 600; padding: 8px 12px;
+            border-radius: 20px; cursor: pointer; transition: all 0.3s ease;
+        }
+
+        .nav-tab.active, .nav-tab:hover { background: linear-gradient(135deg, var(--gold), #b45309); color: #000; }
+
+        /* MAIN APP CONTAINER */
+        #app {
+            width: 92%; max-width: 900px; margin-top: 25px;
+            background: var(--card-bg); backdrop-filter: blur(16px);
+            border: 2px solid var(--gold); border-radius: 24px; padding: 30px 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(245, 158, 11, 0.1);
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+
+        /* HEADINGS */
+        h1.main-title {
+            font-family: 'Cinzel', serif; font-size: 2rem; text-align: center;
+            color: var(--gold-glow); margin-bottom: 8px; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+        p.subtitle { text-align: center; color: #cbd5e1; margin-bottom: 25px; font-size: 0.95rem; }
+
+        /* INPUTS & BUTTONS */
+        .form-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--gold-glow); font-size: 0.9rem; }
+        input[type="text"], input[type="tel"], input[type="password"], input[type="number"], select {
+            width: 100%; padding: 12px 16px; border-radius: 12px;
+            border: 1.5px solid var(--gold); background: rgba(3, 28, 21, 0.8);
+            color: #fff; font-size: 1rem; outline: none; transition: 0.3s; margin-bottom: 10px;
+        }
+        input:focus, select:focus { box-shadow: 0 0 10px var(--gold-glow); border-color: #fff; }
+        select option { background: var(--bg-dark); color: #fff; }
+
+        .btn-gold {
+            width: 100%; padding: 14px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, #fbbf24, #d97706); color: #000;
+            font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); margin-top: 10px;
+        }
+        .btn-gold:hover { transform: translateY(-2px); }
+
+        /* PROGRESS & QUESTIONS */
+        .progress-header { display: flex; justify-content: space-between; color: var(--gold-glow); font-weight: bold; margin-bottom: 15px; }
+        .question-title { font-size: 1.25rem; margin-bottom: 20px; line-height: 1.5; color: #fff; text-align: center; }
+        
+        .options-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .option-card {
+            background: rgba(3, 28, 21, 0.7); border: 2px solid rgba(245, 158, 11, 0.3);
+            padding: 15px 20px; border-radius: 12px; color: #fff; text-align: left;
+            font-size: 1rem; cursor: pointer; transition: all 0.2s ease;
+        }
+        .option-card:hover { border-color: var(--gold-glow); background: rgba(6, 78, 59, 0.9); }
+        .option-card.selected { background: rgba(245, 158, 11, 0.3); border-color: var(--gold-glow); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+
+        /* MODALS */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 9999; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background: var(--bg-dark); border: 3px solid var(--danger); border-radius: 20px;
+            width: 90%; max-width: 450px; padding: 30px; text-align: center;
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.5);
+        }
+        .modal-content.rules { border-color: var(--gold); box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3); }
+
+        /* RESULTS SCREEN */
+        .result-box {
+            background: rgba(3, 28, 21, 0.9); border: 2px solid var(--gold); border-radius: 16px; 
+            padding: 20px; margin-bottom: 20px; text-align: left;
+        }
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+        .result-row.total { font-weight: 800; font-size: 1.3rem; color: var(--gold-glow); border-bottom: none; margin-top: 15px; }
+
+        /* LEADERBOARD & ADMIN TABLES */
+        .leaderboard-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .leader-item {
+            background: rgba(3, 28, 21, 0.8); border: 1px solid var(--gold); padding: 14px;
+            border-radius: 12px; display: flex; justify-content: space-between; align-items: center;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .leader-item.winner-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(3, 28, 21, 0.9));
+            border: 2px solid var(--gold-glow); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        }
+        .admin-table {
+            width: 100%; border-collapse: collapse; margin-top: 15px;
+            background: rgba(3, 28, 21, 0.9); border-radius: 12px; overflow: hidden; font-size: 0.9rem;
+        }
+        .admin-table th, .admin-table td { padding: 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-table th { background: var(--gold); color: #000; font-weight: bold; }
+        
+        /* ADMIN ACTIONS */
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .admin-tab-btn {
+            background: transparent; color: var(--gold-glow); border: 2px solid var(--gold-glow);
+            padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .admin-tab-btn.active { background: var(--gold-glow); color: #000; }
+
+        .action-btn {
+            display: inline-block; padding: 6px 10px; border-radius: 6px; text-decoration: none;
+            font-weight: bold; font-size: 0.8rem; margin: 2px; color: #000; cursor: pointer; border: none;
+        }
+        .sms-btn { background: #34d399; }
+        .edit-btn { background: #60a5fa; color: white; }
+        .del-user-btn { background: #ef4444; color: white; }
+        .reward-pending { background: rgba(245, 158, 11, 0.2); color: var(--gold-glow); border: 1px solid var(--gold); }
+        .reward-paid { background: rgba(16, 185, 129, 0.3); color: #34d399; border: 1px solid #10b981; }
+
+        /* BUILDER STYLES */
+        .draft-q-card {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--gold); border-radius: 8px;
+            padding: 15px; margin-bottom: 10px; position: relative; text-align: left;
+        }
+        .del-btn {
+            position: absolute; top: 10px; right: 10px; background: var(--danger); color: #fff;
+            border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+        .edit-q-btn {
+            position: absolute; top: 10px; right: 50px; background: #3b82f6; color: #fff;
+            border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+        
+        .live-indicator {
+            display: inline-block; width: 10px; height: 10px; background-color: var(--danger);
+            border-radius: 50%; margin-right: 8px; animation: blink 1s infinite;
+        }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 768px) {
+            .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <button class="nav-tab active" onclick="switchTab('quiz-tab')">🎮 Challenge</button>
+        <button class="nav-tab" onclick="switchTab('dashboard-tab')">📊 Leaderboard</button>
+        <button class="nav-tab" onclick="switchTab('admin-tab')">🛡️ Admin</button>
+    </nav>
+
+    <!-- RULES MODAL -->
+    <div id="rules-modal" class="modal-overlay">
+        <div class="modal-content rules">
+            <h2 style="color:var(--gold-glow); margin-bottom:15px;">⚠️ Strict Quiz Rules</h2>
+            <ul style="text-align:left; color:#fff; margin-bottom:20px; line-height:1.8; font-size:0.95rem;">
+                <li>❌ Do not <b>minimize</b> the browser.</li>
+                <li>❌ Do not <b>switch tabs</b> or windows.</li>
+                <li>❌ Do not <b>refresh</b> the page.</li>
+                <li>❌ Do not <b>close</b> the website.</li>
+            </ul>
+            <p style="color:var(--danger); font-weight:bold; margin-bottom:20px; font-size:0.9rem;">If you leave the quiz for ANY reason, you will be automatically disqualified and lose your chance at the prize!</p>
+            <button class="btn-gold" onclick="acceptRulesAndStart()">I Understand, Start Quiz</button>
+        </div>
+    </div>
+
+    <!-- DISQUALIFIED MODAL -->
+    <div id="disqualified-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color:var(--danger); margin-bottom:15px; font-size: 2rem;">🚫 Disqualified!</h2>
+            <p style="color:#fff; font-size:1rem; line-height:1.6;">
+                You left, minimized, refreshed, or switched tabs during the quiz.<br><br>
+                <b>Your attempt has been cancelled and recorded as a cheat attempt. No prize for you!</b>
+            </p>
+        </div>
+    </div>
+
+    <!-- USER EDIT MODAL (ADMIN ONLY) -->
+    <div id="edit-user-modal" class="modal-overlay">
+        <div class="modal-content rules">
+            <h2 style="color:var(--gold-glow); margin-bottom:15px;">✏️ Edit Player</h2>
+            <input type="hidden" id="edit-u-id">
+            <div class="form-group"><label>Name</label><input type="text" id="edit-u-name"></div>
+            <div class="form-group"><label>Mobile</label><input type="tel" id="edit-u-mobile"></div>
+            <div class="form-group"><label>Score</label><input type="number" id="edit-u-score"></div>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-gold" style="background:var(--success); color:#fff;" onclick="saveUserEdit()">💾 Save</button>
+                <button class="btn-gold" style="background:var(--danger); color:#fff;" onclick="closeEditModal()">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <!-- TAB 1: QUIZ -->
+        <div id="quiz-tab" class="tab-content active">
+            
+            <!-- ENTRY SCREEN -->
+            <div id="entry-screen">
+                <h1 class="main-title">🌙 IQ & Logic Challenge</h1>
+                <p class="subtitle">Test your brainpower with trick questions. Good luck!</p>
+                
+                <div class="form-group">
+                    <label>Enter Your Name *</label>
+                    <input type="text" id="user-name" placeholder="Who are you?" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Mobile Number * (For the Prize 🎁)</label>
+                    <input type="tel" id="user-mobile" placeholder="01XXXXXXXXX" required>
+                </div>
+
+                <button class="btn-gold" onclick="showRules()">🚦 Enter The Arena</button>
+            </div>
+
+            <!-- QUIZ ACTIVE SCREEN -->
+            <div id="quiz-active-screen" style="display:none;">
+                <div class="progress-header">
+                    <span id="q-counter">Question 1/X</span>
+                    <span id="q-points" style="color: #60a5fa;">0 Marks</span>
+                </div>
+
+                <div class="question-title" id="q-title">Loading question...</div>
+                
+                <!-- Dynamic Question Container -->
+                <div id="dynamic-q-container"></div>
+
+                <button class="btn-gold" id="next-btn" onclick="nextQuestion()" style="display:none;">Next Question ➡️</button>
+                <button class="btn-gold" id="submit-btn" onclick="submitQuiz()" style="display:none; background: var(--success); color:#fff;">✅ Submit Challenge</button>
+            </div>
+
+            <!-- RESULT SCREEN -->
+            <div id="result-screen" style="display:none; text-align:center;">
+                <h1 class="main-title">🏁 Challenge Over!</h1>
+                <h2 id="result-title" style="color:var(--success); margin-bottom:20px;"></h2>
+
+                <div class="result-box">
+                    <div class="result-row"><span>Player Name:</span> <b id="res-name" style="color:#fff;"></b></div>
+                    <div class="result-row"><span>Correct Answers:</span> <b id="res-correct" style="color:var(--success);"></b></div>
+                    <div class="result-row"><span>Wrong Answers:</span> <b id="res-wrong" style="color:var(--danger);"></b></div>
+                    <div class="result-row total"><span>TOTAL SCORE:</span> <span id="res-total"></span></div>
+                </div>
+
+                <button class="btn-gold" onclick="switchTab('dashboard-tab')">📊 See Live Leaderboard</button>
+            </div>
+        </div>
+
+        <!-- TAB 2: LIVE DASHBOARD -->
+        <div id="dashboard-tab" class="tab-content">
+            <h1 class="main-title"><span class="live-indicator"></span>Live Champions</h1>
+            <p class="subtitle">Rankings sync instantly as players finish!</p>
+            <div id="dash-loader" style="text-align:center; color:var(--gold-glow); display:none;">Waiting for players...</div>
+            <div class="leaderboard-list" id="leaderboard-items"></div>
+        </div>
+
+        <!-- TAB 3: ADMIN PANEL -->
+        <div id="admin-tab" class="tab-content">
+            <h1 class="main-title">🛡️ Admin Panel</h1>
+            
+            <!-- Login -->
+            <div id="admin-login-screen">
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <input type="password" id="admin-pass" placeholder="Enter password to unlock">
+                </div>
+                <button class="btn-gold" onclick="verifyAdmin()">Unlock Admin Area</button>
+            </div>
+
+            <!-- Admin Workspace -->
+            <div id="admin-workspace" style="display:none;">
+                <div class="admin-tabs">
+                    <button class="admin-tab-btn active" id="btn-view-board" onclick="switchAdminView('board')">Live Leaderboard</button>
+                    <button class="admin-tab-btn" id="btn-view-builder" onclick="switchAdminView('builder')">Quiz Builder</button>
+                </div>
+
+                <!-- Leaderboard View -->
+                <div id="admin-board-view">
+                    <p class="subtitle" style="text-align:center;">Manage players and track reward status.</p>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Player Info</th>
+                                    <th>Score</th>
+                                    <th>Reward</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Quiz Builder View -->
+                <div id="admin-builder-view" style="display:none;">
+                    
+                    <!-- Top Action Buttons -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button class="btn-gold" style="background: #3b82f6; color: #fff; margin:0;" onclick="loadDefaultSet()">🔄 Load Default 15 Qs</button>
+                        <button class="btn-gold" style="background: var(--danger); color: #fff; margin:0;" onclick="deletePublishedQuiz()">🗑️ Delete Active Quiz</button>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; border: 1px solid var(--gold); margin-bottom:20px; text-align:left;">
+                        <h3 id="qb-header-text" style="color:var(--gold-glow); margin-bottom:15px;">➕ Create New Question</h3>
+                        
+                        <label>Question Type</label>
+                        <select id="qb-type" onchange="toggleQBType()">
+                            <option value="mcq">MCQ (Multiple Choice)</option>
+                            <option value="short">Short Answer (Text Match)</option>
+                        </select>
+
+                        <label>Question Text</label>
+                        <input type="text" id="qb-q" placeholder="Enter the question here...">
+
+                        <!-- MCQ Fields -->
+                        <div id="qb-mcq-fields">
+                            <label>Options</label>
+                            <input type="text" id="qb-o1" placeholder="Option 1">
+                            <input type="text" id="qb-o2" placeholder="Option 2">
+                            <input type="text" id="qb-o3" placeholder="Option 3">
+                            <input type="text" id="qb-o4" placeholder="Option 4">
+                            
+                            <label>Which option is correct?</label>
+                            <select id="qb-ans-mcq">
+                                <option value="1">Option 1</option>
+                                <option value="2">Option 2</option>
+                                <option value="3">Option 3</option>
+                                <option value="4">Option 4</option>
+                            </select>
+                        </div>
+
+                        <!-- Short Answer Fields -->
+                        <div id="qb-short-fields" style="display:none;">
+                            <label>Correct Answer (Exact word/phrase)</label>
+                            <input type="text" id="qb-ans-short" placeholder="e.g. Messi, 1986, Yes">
+                            <small style="color:#cbd5e1;">System checks exact match (case-insensitive).</small><br><br>
+                        </div>
+
+                        <label>Points for this Question</label>
+                        <input type="number" id="qb-points" value="10" min="1">
+
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button id="qb-add-btn" class="btn-gold" style="background: var(--success); color:#fff; flex: 1;" onclick="addDraftQuestion()">➕ Add to Draft</button>
+                            <button id="qb-cancel-btn" class="btn-gold" style="background: var(--danger); color:#fff; flex: 1; display:none;" onclick="cancelEditDraft()">❌ Cancel Edit</button>
+                        </div>
+                    </div>
+
+                    <h3 style="color:var(--gold-glow); margin-bottom:10px;">📋 Current Draft Set</h3>
+                    <div id="draft-list"></div>
+
+                    <button class="btn-gold" style="margin-top:20px;" onclick="publishQuiz()">🚀 PUBLISH QUIZ SET LIVE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULE & LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, getDoc, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        // FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwsR20RiI7k1c3c6AmCdKx6ywOuFSm_iw",
+            authDomain: "quiz-bdc39.firebaseapp.com",
+            databaseURL: "https://quiz-bdc39-default-rtdb.firebaseio.com",
+            projectId: "quiz-bdc39",
+            storageBucket: "quiz-bdc39.firebasestorage.app",
+            messagingSenderId: "310580648365",
+            appId: "1:310580648365:web:76770bc97759ef0a636924"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const jsConfetti = new JSConfetti();
+
+        // -----------------------
+        // DEFAULT 15 IQ & MATH QUESTIONS
+        // -----------------------
+        const defaultQuestions = [
+            { type: "mcq", q: "A farmer has 17 sheep. All but 9 die. How many are left?", options: ["8", "9", "17", "0"], ans: "9", points: 10 },
+            { type: "mcq", q: "Which is heavier?", options: ["1 kg of iron", "1 kg of cotton", "Iron is heavier", "Both weigh the same"], ans: "Both weigh the same", points: 10 },
+            { type: "mcq", q: "3 cats catch 3 mice in 3 minutes. How many cats are needed to catch 100 mice in 100 minutes?", options: ["1", "3", "33", "100"], ans: "3", points: 10 },
+            { type: "mcq", q: "A plane crashes on the border of India and Bangladesh. Where do they bury the survivors?", options: ["India", "Bangladesh", "Both countries", "You do not bury survivors"], ans: "You do not bury survivors", points: 10 },
+            { type: "mcq", q: "If you pass the person in 2nd place in a race, what place are you in?", options: ["1st", "2nd", "3rd", "Last"], ans: "2nd", points: 10 },
+            { type: "mcq", q: "How many months have 28 days?", options: ["1", "2", "6", "12"], ans: "12", points: 10 },
+            { type: "mcq", q: "A shopkeeper has 10 apples. He gives away all but 3. How many apples does he have left?", options: ["3", "7", "0", "10"], ans: "3", points: 10 },
+            { type: "mcq", q: "What is the next number? 1, 4, 9, 16, 25, ?", options: ["30", "35", "36", "49"], ans: "36", points: 10 },
+            { type: "mcq", q: "A clock shows 3:15. What is the angle between the hour and minute hands?", options: ["0°", "7.5°", "15°", "22.5°"], ans: "7.5°", points: 10 },
+            { type: "mcq", q: "What comes next? 2, 6, 12, 20, 30, ?", options: ["36", "40", "42", "44"], ans: "42", points: 10 },
+            { type: "mcq", q: "Find the next number. 1, 3, 6, 10, 15, ?", options: ["18", "20", "21", "24"], ans: "21", points: 10 },
+            { type: "mcq", q: "What is the next number? 1, 8, 27, 64, 125, ?", options: ["150", "196", "216", "225"], ans: "216", points: 10 },
+            { type: "mcq", q: "Find the missing number. 5, 10, 20, 40, 80, ?", options: ["120", "140", "160", "180"], ans: "160", points: 10 },
+            { type: "mcq", q: "What comes next? 10, 20, 19, 38, 37, 74, ?", options: ["72", "73", "75", "76"], ans: "73", points: 10 },
+            { type: "mcq", q: "What is the value of: 6 + 6 ÷ 6 + 6 × 6", options: ["13", "42", "48", "72"], ans: "42", points: 10 }
+        ];
+
+        let activeQuestions = [...defaultQuestions];
+        let draftQuestions = [];
+        let editingIndex = null;
+        
+        let currentQIndex = 0;
+        let userName = "";
+        let userMobile = "";
+        let userAnswers = [];
+        let isQuizActive = false;
+        let isDisqualified = false;
+        
+        let leaderboardListener = null;
+        let adminListener = null;
+
+        // Fetch published questions
+        async function fetchActiveQuiz() {
+            try {
+                const docSnap = await getDoc(doc(db, "admin_data", "current_quiz"));
+                if (docSnap.exists() && docSnap.data().questions?.length > 0) {
+                    activeQuestions = docSnap.data().questions;
+                } else {
+                    activeQuestions = [...defaultQuestions];
+                }
+            } catch(e) {
+                activeQuestions = [...defaultQuestions];
+            }
+        }
+        fetchActiveQuiz();
+        
+        onSnapshot(doc(db, "admin_data", "current_quiz"), (docSnap) => {
+            if(docSnap.exists() && docSnap.data().questions?.length > 0) {
+                activeQuestions = docSnap.data().questions;
+            } else {
+                activeQuestions = [...defaultQuestions];
+            }
+        });
+
+        // -----------------------
+        // PLAYER LOGIC
+        // -----------------------
+        window.switchTab = function(tabId) {
+            if(isQuizActive) return; 
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            if (tabId === 'dashboard-tab') startLiveLeaderboard();
+        };
+
+        window.showRules = function() {
+            if(activeQuestions.length === 0) return alert("Admin has not published any questions yet. Please wait!");
+            userName = document.getElementById('user-name').value.trim();
+            userMobile = document.getElementById('user-mobile').value.trim();
+            if (!userName || !userMobile) return alert("Please enter your Name and Mobile Number!");
+            document.getElementById('rules-modal').style.display = 'flex';
+        };
+
+        window.acceptRulesAndStart = function() {
+            document.getElementById('rules-modal').style.display = 'none';
+            document.getElementById('entry-screen').style.display = 'none';
+            document.getElementById('quiz-active-screen').style.display = 'block';
+
+            currentQIndex = 0;
+            userAnswers = new Array(activeQuestions.length).fill(null);
+            isQuizActive = true; 
+            isDisqualified = false;
+            renderQuestion();
+        };
+
+        function renderQuestion() {
+            const q = activeQuestions[currentQIndex];
+            document.getElementById('q-counter').innerText = `Question ${currentQIndex + 1}/${activeQuestions.length}`;
+            document.getElementById('q-points').innerText = `${q.points} Marks`;
+            document.getElementById('q-title').innerText = q.q;
+
+            const container = document.getElementById('dynamic-q-container');
+            container.innerHTML = '';
+            
+            if(q.type === 'mcq') {
+                const optGrid = document.createElement('div');
+                optGrid.className = 'options-grid';
+                q.options.forEach(opt => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option-card';
+                    if(userAnswers[currentQIndex] === opt) btn.classList.add('selected');
+                    btn.innerText = opt;
+                    btn.onclick = () => {
+                        userAnswers[currentQIndex] = opt;
+                        optGrid.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                        btn.classList.add('selected');
+                    };
+                    optGrid.appendChild(btn);
+                });
+                container.appendChild(optGrid);
+            } else {
+                container.innerHTML = `<input type="text" id="short-answer-input" placeholder="Type your exact answer here..." style="margin-bottom:20px; text-align:center; font-size:1.2rem; padding: 15px;" value="${userAnswers[currentQIndex] || ''}">`;
+            }
+
+            const isLast = currentQIndex === activeQuestions.length - 1;
+            document.getElementById('next-btn').style.display = isLast ? 'none' : 'block';
+            document.getElementById('submit-btn').style.display = isLast ? 'block' : 'none';
+        }
+
+        window.nextQuestion = function() {
+            if(!saveCurrentAnswer()) return;
+            currentQIndex++;
+            renderQuestion();
+        };
+
+        function saveCurrentAnswer() {
+            const q = activeQuestions[currentQIndex];
+            if(q.type === 'short') {
+                const val = document.getElementById('short-answer-input').value.trim();
+                if(!val) { alert("Please type an answer!"); return false; }
+                userAnswers[currentQIndex] = val;
+            } else {
+                if(!userAnswers[currentQIndex]) { alert("Please select an option!"); return false; }
+            }
+            return true;
+        }
+
+        window.submitQuiz = async function() {
+            if(!saveCurrentAnswer()) return;
+            isQuizActive = false; 
+            
+            let correctCount = 0; let wrongCount = 0;
+            let totalScore = 0; let maxScore = 0;
+
+            for(let i=0; i<activeQuestions.length; i++) {
+                const q = activeQuestions[i];
+                maxScore += parseInt(q.points);
+                let isCorrect = q.type === 'mcq' ? (userAnswers[i] === q.ans) : (userAnswers[i].toLowerCase() === q.ans.toLowerCase());
+
+                if(isCorrect) { correctCount++; totalScore += parseInt(q.points); } 
+                else { wrongCount++; }
+            }
+
+            const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
+            let title = percentage === 100 ? "🐐 Flawless! True Genius!" : percentage >= 60 ? "🧠 Great Job! Smart Mind!" : percentage >= 30 ? "🚜 Needs improvement..." : "🤡 Absolute Disaster!";
+
+            document.getElementById('quiz-active-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+
+            document.getElementById('result-title').innerText = title;
+            document.getElementById('res-name').innerText = userName;
+            document.getElementById('res-correct').innerText = correctCount;
+            document.getElementById('res-wrong').innerText = wrongCount;
+            document.getElementById('res-total').innerText = `${totalScore} / ${maxScore}`;
+
+            jsConfetti.addConfetti();
+
+            try {
+                await addDoc(collection(db, "custom_quiz_results"), {
+                    name: userName, mobile: userMobile, totalScore: totalScore,
+                    maxScore: maxScore, status: "Completed", rewardGiven: false,
+                    timestamp: serverTimestamp()
+                });
+            } catch (err) {}
+        };
+
+        // ANTI-CHEAT
+        async function triggerDisqualification() {
+            if(!isQuizActive || isDisqualified) return;
+            isQuizActive = false; isDisqualified = true;
+
+            document.getElementById('disqualified-modal').style.display = 'flex';
+            document.getElementById('quiz-active-screen').style.display = 'none';
+
+            try {
+                await addDoc(collection(db, "custom_quiz_results"), {
+                    name: userName, mobile: userMobile, totalScore: 0, rewardGiven: false,
+                    status: "Disqualified (Cheated/Left)", timestamp: serverTimestamp()
+                });
+            } catch(e) {}
+        }
+        document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'hidden' && isQuizActive) triggerDisqualification(); });
+        window.addEventListener("blur", () => { if (isQuizActive) triggerDisqualification(); });
+        window.addEventListener("beforeunload", (e) => { if (isQuizActive) { triggerDisqualification(); e.preventDefault(); e.returnValue = ''; }});
+
+        // -----------------------
+        // LIVE DASHBOARD 
+        // -----------------------
+        function startLiveLeaderboard() {
+            if (leaderboardListener) return; 
+            document.getElementById('dash-loader').style.display = 'block';
+            
+            leaderboardListener = onSnapshot(collection(db, "custom_quiz_results"), (snapshot) => {
+                let dataArr = [];
+                snapshot.forEach((doc) => dataArr.push({ id: doc.id, ...doc.data() }));
+                
+                dataArr.sort((a, b) => {
+                    if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+                    let timeA = a.timestamp ? a.timestamp.toMillis() : 0;
+                    let timeB = b.timestamp ? b.timestamp.toMillis() : 0;
+                    return timeA - timeB;
+                });
+
+                const list = document.getElementById('leaderboard-items');
+                list.innerHTML = '';
+                
+                let rank = 1;
+                dataArr.forEach((data) => {
+                    let statusHtml = data.status === "Completed" ? `<span style="color:var(--success); font-size:0.8rem;">Completed</span>` : `<span style="color:var(--danger); font-size:0.8rem;">🚨 Disqualified</span>`;
+                    let hiddenMobile = data.mobile ? data.mobile.substring(0, 4) + "***" + data.mobile.substring(data.mobile.length - 3) : "N/A";
+                    
+                    let isWinner = rank === 1 && data.totalScore > 0;
+                    let boxClass = isWinner ? "leader-item winner-box" : "leader-item";
+                    let rankIcon = isWinner ? "👑 Winner" : `${rank}.`;
+
+                    list.innerHTML += `
+                        <div class="${boxClass}">
+                            <div>
+                                <div style="font-weight:bold; color:#fff;">${rankIcon} ${data.name}</div>
+                                <div style="font-size:0.8rem; color:var(--text-gold);">Mobile: ${hiddenMobile}</div>
+                                ${statusHtml}
+                            </div>
+                            <div class="leader-rank">${data.totalScore} Pts</div>
+                        </div>
+                    `;
+                    rank++;
+                });
+                if(list.innerHTML === '') list.innerHTML = '<div style="text-align:center; color:gray;">Waiting for players...</div>';
+                document.getElementById('dash-loader').style.display = 'none';
+            });
+        }
+
+        // -----------------------
+        // ADMIN PANEL LOGIC
+        // -----------------------
+        window.verifyAdmin = async function() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === "admin123") {
+                document.getElementById('admin-login-screen').style.display = 'none';
+                document.getElementById('admin-workspace').style.display = 'block';
+                startLiveAdmin();
+                
+                if (activeQuestions.length > 0) {
+                    draftQuestions = JSON.parse(JSON.stringify(activeQuestions));
+                } else {
+                    draftQuestions = JSON.parse(JSON.stringify(defaultQuestions));
+                }
+                renderDrafts();
+            } else alert("Incorrect Password!");
+        };
+
+        window.switchAdminView = function(view) {
+            document.getElementById('btn-view-board').classList.remove('active');
+            document.getElementById('btn-view-builder').classList.remove('active');
+            document.getElementById('admin-board-view').style.display = 'none';
+            document.getElementById('admin-builder-view').style.display = 'none';
+
+            if(view === 'board') {
+                document.getElementById('btn-view-board').classList.add('active');
+                document.getElementById('admin-board-view').style.display = 'block';
+            } else {
+                document.getElementById('btn-view-builder').classList.add('active');
+                document.getElementById('admin-builder-view').style.display = 'block';
+            }
+        };
+
+        function startLiveAdmin() {
+            if (adminListener) return; 
+            adminListener = onSnapshot(collection(db, "custom_quiz_results"), (snapshot) => {
+                let dataArr = [];
+                snapshot.forEach((doc) => dataArr.push({ id: doc.id, ...doc.data() }));
+                
+                dataArr.sort((a, b) => {
+                    if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+                    let timeA = a.timestamp ? a.timestamp.toMillis() : 0;
+                    let timeB = b.timestamp ? b.timestamp.toMillis() : 0;
+                    return timeA - timeB;
+                });
+
+                const tableBody = document.getElementById('admin-table-body');
+                tableBody.innerHTML = '';
+                
+                let rank = 1;
+                dataArr.forEach((data) => {
+                    const statusColor = data.status === "Completed" ? "var(--success)" : "var(--danger)";
+                    const encodedName = encodeURIComponent(data.name || "Player");
+                    const smsLink = `sms:${data.mobile}?body=Congratulations%20${encodedName}!%20You%20scored%20${data.totalScore}%20points!`;
+                    
+                    let rankDisplay = rank === 1 && data.totalScore > 0 ? "👑 1" : rank;
+                    
+                    let rewardClass = data.rewardGiven ? "action-btn reward-paid" : "action-btn reward-pending";
+                    let rewardText = data.rewardGiven ? "✅ Paid" : "🎁 Pending";
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><b style="color:var(--gold-glow)">${rankDisplay}</b></td>
+                            <td>
+                                <b>${data.name}</b><br>
+                                <span style="font-size:0.8rem; color:#cbd5e1;">📞 ${data.mobile || "N/A"}</span>
+                            </td>
+                            <td><b>${data.totalScore}</b> Pts<br><span style="font-size:0.75rem; color:${statusColor};">${data.status}</span></td>
+                            <td>
+                                <button class="${rewardClass}" onclick="toggleReward('${data.id}', ${data.rewardGiven})">${rewardText}</button>
+                            </td>
+                            <td>
+                                <a href="${smsLink}" class="action-btn sms-btn">💬 SMS</a>
+                                <button class="action-btn edit-btn" onclick="openEditUser('${data.id}', '${data.name}', '${data.mobile}', ${data.totalScore})">✏️</button>
+                                <button class="action-btn del-user-btn" onclick="deleteUser('${data.id}')">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                    rank++;
+                });
+                if(tableBody.innerHTML === '') tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Waiting for players...</td></tr>';
+            });
+        }
+
+        // USER MANAGEMENT
+        window.toggleReward = async function(docId, currentStatus) {
+            try { await updateDoc(doc(db, "custom_quiz_results", docId), { rewardGiven: !currentStatus }); } 
+            catch(e) { console.error("Update failed", e); }
+        };
+
+        window.deleteUser = async function(docId) {
+            if(confirm("Are you sure you want to delete this player permanently?")) {
+                try { await deleteDoc(doc(db, "custom_quiz_results", docId)); } 
+                catch(e) { console.error("Delete failed", e); }
+            }
+        };
+
+        window.openEditUser = function(docId, name, mobile, score) {
+            document.getElementById('edit-u-id').value = docId;
+            document.getElementById('edit-u-name').value = name;
+            document.getElementById('edit-u-mobile').value = mobile;
+            document.getElementById('edit-u-score').value = score;
+            document.getElementById('edit-user-modal').style.display = 'flex';
+        };
+
+        window.closeEditModal = function() { document.getElementById('edit-user-modal').style.display = 'none'; };
+
+        window.saveUserEdit = async function() {
+            const docId = document.getElementById('edit-u-id').value;
+            const name = document.getElementById('edit-u-name').value;
+            const mobile = document.getElementById('edit-u-mobile').value;
+            const score = parseInt(document.getElementById('edit-u-score').value);
+            try {
+                await updateDoc(doc(db, "custom_quiz_results", docId), { name: name, mobile: mobile, totalScore: score });
+                closeEditModal();
+            } catch(e) { alert("Failed to save changes."); }
+        };
+
+        // -----------------------
+        // QUIZ BUILDER LOGIC
+        // -----------------------
+        window.loadDefaultSet = function() {
+            if(draftQuestions.length > 0) {
+                if(!confirm("This will overwrite your current draft. Continue?")) return;
+            }
+            draftQuestions = JSON.parse(JSON.stringify(defaultQuestions));
+            renderDrafts();
+        };
+
+        window.deletePublishedQuiz = async function() {
+            if(!confirm("Are you sure? This will delete the active quiz. Players won't be able to play until you publish a new one!")) return;
+            try {
+                await setDoc(doc(db, "admin_data", "current_quiz"), { questions: [], updatedAt: serverTimestamp() });
+                activeQuestions = [];
+                alert("Active quiz deleted successfully!");
+            } catch(e) { console.error(e); alert("Failed to delete quiz."); }
+        };
+
+        window.toggleQBType = function() {
+            const type = document.getElementById('qb-type').value;
+            if(type === 'mcq') {
+                document.getElementById('qb-mcq-fields').style.display = 'block';
+                document.getElementById('qb-short-fields').style.display = 'none';
+            } else {
+                document.getElementById('qb-mcq-fields').style.display = 'none';
+                document.getElementById('qb-short-fields').style.display = 'block';
+            }
+        };
+
+        window.addDraftQuestion = function() {
+            const type = document.getElementById('qb-type').value;
+            const qText = document.getElementById('qb-q').value.trim();
+            const points = parseInt(document.getElementById('qb-points').value) || 10;
+            if(!qText) return alert("Enter question text!");
+
+            let newQ = { type, q: qText, points };
+
+            if(type === 'mcq') {
+                const o1 = document.getElementById('qb-o1').value.trim();
+                const o2 = document.getElementById('qb-o2').value.trim();
+                const o3 = document.getElementById('qb-o3').value.trim();
+                const o4 = document.getElementById('qb-o4').value.trim();
+                const correctIndex = parseInt(document.getElementById('qb-ans-mcq').value);
+                if(!o1 || !o2 || !o3 || !o4) return alert("Fill all 4 options!");
+                const optionsArr = [o1, o2, o3, o4];
+                newQ.options = optionsArr; newQ.ans = optionsArr[correctIndex - 1]; 
+            } else {
+                const shortAns = document.getElementById('qb-ans-short').value.trim();
+                if(!shortAns) return alert("Enter the correct answer!");
+                newQ.ans = shortAns;
+            }
+
+            if (editingIndex !== null) { draftQuestions[editingIndex] = newQ; window.cancelEditDraft(); } 
+            else { draftQuestions.push(newQ); clearBuilderInputs(); }
+            renderDrafts();
+        };
+
+        function clearBuilderInputs() {
+            document.getElementById('qb-q').value = '';
+            document.getElementById('qb-o1').value = ''; document.getElementById('qb-o2').value = '';
+            document.getElementById('qb-o3').value = ''; document.getElementById('qb-o4').value = '';
+            document.getElementById('qb-ans-short').value = ''; document.getElementById('qb-points').value = '10';
+        }
+
+        window.editDraftQ = function(index) {
+            editingIndex = index; const q = draftQuestions[index];
+            document.getElementById('qb-type').value = q.type; window.toggleQBType();
+            document.getElementById('qb-q').value = q.q; document.getElementById('qb-points').value = q.points;
+
+            if(q.type === 'mcq') {
+                document.getElementById('qb-o1').value = q.options[0]; document.getElementById('qb-o2').value = q.options[1];
+                document.getElementById('qb-o3').value = q.options[2]; document.getElementById('qb-o4').value = q.options[3];
+                document.getElementById('qb-ans-mcq').value = q.options.indexOf(q.ans) + 1;
+            } else { document.getElementById('qb-ans-short').value = q.ans; }
+
+            document.getElementById('qb-header-text').innerText = `✏️ Edit Question ${index + 1}`;
+            const addBtn = document.getElementById('qb-add-btn');
+            addBtn.innerText = "💾 Update Question"; addBtn.style.background = "var(--gold)"; addBtn.style.color = "#000";
+            document.getElementById('qb-cancel-btn').style.display = "block";
+            document.getElementById('admin-builder-view').scrollIntoView({behavior: 'smooth'});
+        };
+
+        window.cancelEditDraft = function() {
+            editingIndex = null; clearBuilderInputs();
+            document.getElementById('qb-header-text').innerText = "➕ Create New Question";
+            const addBtn = document.getElementById('qb-add-btn');
+            addBtn.innerText = "➕ Add to Draft"; addBtn.style.background = "var(--success)"; addBtn.style.color = "#fff";
+            document.getElementById('qb-cancel-btn').style.display = "none";
+        };
+
+        window.removeDraftQ = function(index) {
+            if (editingIndex === index) window.cancelEditDraft();
+            else if (editingIndex !== null && index < editingIndex) editingIndex--;
+            draftQuestions.splice(index, 1);
+            renderDrafts();
+        };
+
+        function renderDrafts() {
+            const container = document.getElementById('draft-list'); container.innerHTML = '';
+            if(draftQuestions.length === 0) { container.innerHTML = '<p style="color:gray;">No questions drafted yet.</p>'; return; }
+            draftQuestions.forEach((q, idx) => {
+                let details = q.type === 'mcq' ? `<div style="color:#cbd5e1; font-size:0.85rem; margin-top:5px;">Options: ${q.options.join(', ')}<br>Ans: <b style="color:var(--success)">${q.ans}</b></div>` : `<div style="color:#cbd5e1; font-size:0.85rem; margin-top:5px;">Ans: <b style="color:var(--success)">${q.ans}</b></div>`;
+                container.innerHTML += `
+                    <div class="draft-q-card">
+                        <button class="edit-q-btn" onclick="editDraftQ(${idx})">✏️</button>
+                        <button class="del-btn" onclick="removeDraftQ(${idx})">❌</button>
+                        <div style="color:var(--gold-glow); font-weight:bold;">Q${idx+1} (${q.type.toUpperCase()}) - ${q.points} Pts</div>
+                        <div style="color:#fff; margin-top:5px;">${q.q}</div>
+                        ${details}
+                    </div>
+                `;
+            });
+        }
+
+        window.publishQuiz = async function() {
+            if(draftQuestions.length === 0) return alert("Cannot publish an empty quiz!");
+            if(!confirm("Are you sure? This updates the quiz for all players instantly.")) return;
+            try {
+                await setDoc(doc(db, "admin_data", "current_quiz"), { questions: draftQuestions, updatedAt: serverTimestamp() });
+                activeQuestions = [...draftQuestions]; jsConfetti.addConfetti();
+                alert("Quiz Published Successfully!");
+            } catch(e) { alert("Failed to publish."); }
+        };
+    </script>
+</body>
+</html>
